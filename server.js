@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
 const app = express();
 const port = 3000;
 
@@ -22,6 +23,9 @@ app.post('/vote', (req, res) => {
     if (option === 'option1' || option === 'option2') {
         votes[option]++;
         voterIPs.add(userIP);
+
+        fs.appendFileSync('votes.txt', `${userIP}: ${option}\n`, 'utf8');
+
         return res.json({ message: `Thank you for voting for ${option}` });
     }
 
