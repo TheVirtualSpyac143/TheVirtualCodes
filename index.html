@@ -48,14 +48,22 @@
     <div class="container">
         <h1>Vote for Your Option</h1>
         <select id="voteOption">
-            <option value="option1">Older method: Sending PDFs and Questions to group..</option>
-            <option value="option2">Newer method: Writing at school in rough notebook, then rewriting in fair nb.. And very few questions at school</option>
+            <option value="" selected disabled>Select an option</option>
+            <option value="option1">Older Method: Sending PDFs and Questions to Group..</option>
+            <option value="option2">Newer method: Writing in school in rough notebook, Then rewriting it in fair notebook. Not much Question practise (As its not possible).</option>
         </select>
         <button onclick="castVote()">Submit Vote</button>
     </div>
     <script>
         async function castVote() {
-            const option = document.getElementById('voteOption').value;
+            const select = document.getElementById('voteOption');
+            const option = select.value;
+
+            if (!option) {
+                alert('Please select an option before submitting.');
+                return;
+            }
+
             try {
                 const response = await fetch('/vote', {
                     method: 'POST',
