@@ -7,6 +7,12 @@ const port = 3000;
 
 let votes = { option1: 0, option2: 0 };
 let voterIPs = new Set();
+const votesFilePath = 'votes.txt';
+
+// Ensure the votes file exists
+fs.open(votesFilePath, 'a', (err) => {
+    if (err) throw err;
+});
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -16,7 +22,10 @@ app.post('/vote', (req, res) => {
     const { option } = req.body;
     const userIP = req.ip;
 
+    console.log(`Received vote for ${option} from IP: ${userIP}`);  // Logging the vote attempt
+
     if (voterIPs.has(userIP)) {
+        console.log('Vote already cast by this IP');
         return res.status(400).json({ message: 'You have already voted!' });
     }
 
@@ -24,23 +33,4 @@ app.post('/vote', (req, res) => {
         votes[option]++;
         voterIPs.add(userIP);
 
-        fs.appendFileSync('votes.txt', `${userIP}: ${option}\n`, 'utf8');
-
-        return res.json({ message: `Thank you for voting for ${option}` });
-    }
-
-    res.status(400).json({ message: 'Invalid option' });
-});
-
-app.get('/results', (req, res) => {
-    res.json(votes);
-});
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
-
-// Serve the HTML
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
+        fs.appendFileSync(votesFilePath, `${
