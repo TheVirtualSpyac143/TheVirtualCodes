@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opinion and Voting System</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vote for Your Option</h1>
+        <select id="voteOption">
+            <option value="option1">Older method: Sending PDFs and Questions to group..</option>
+            <option value="option2">Newer method: Writing at school in rough notebook, then rewriting in fair nb.. And very few questions at school</option>
+        </select>
+        <button onclick="castVote()">Submit Vote</button>
+    </div>
+    <script>
+        async function castVote() {
+            const option = document.getElementById('voteOption').value;
+            try {
+                const response = await fetch('/vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ option })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                    document.querySelector('button').disabled = true;
+                    document.querySelector('select').disabled = true;
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        window.onload = async function() {
+            const response = await fetch('/vote');
+            const data = await response.json();
+
+            if (data.voted) {
+                document.querySelector('button').disabled = true;
+                document.querySelector('select').disabled = true;
+            }
+        };
+    </script>
+</body>
+</html>
